@@ -1,44 +1,57 @@
 package com.github.glywood.casanotes;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.logging.Logger;
+
+import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import java.io.IOException;
-import java.net.URI;
-
 /**
  * Main class.
- *
  */
 public class Main {
-    // Base URI the Grizzly HTTP server will listen on
-    public static final String BASE_URI = "http://localhost:8080/myapp/";
+  // Default port the Grizzly HTTP server will listen on
+  public static final int DEFAULT_PORT = 6454;
 
-    /**
-     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
-     * @return Grizzly HTTP server.
-     */
-    public static HttpServer startServer() {
-        // create a resource config that scans for JAX-RS resources and providers
-        // in com.github.glywood package
-        final ResourceConfig rc = new ResourceConfig().packages("com.github.glywood");
+  /**
+   * Starts Grizzly HTTP server exposing JAX-RS resources defined in this
+   * application.
+   * 
+   * @return Grizzly HTTP server.
+   */
+  public static HttpServer startServer(URI uri) throws IOException {
+    // create a resource config that scans for JAX-RS resources and providers
+    // in com.github.glywood.casanotes.resources package
+    final ResourceConfig rc = new ResourceConfig()
+        .packages("com.github.glywood.casanotes.resources")
+        .property("jersey.config.server.wadl.disableWadl", "true");
 
-        // create and start a new instance of grizzly http server
-        // exposing the Jersey application at BASE_URI
-        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
-    }
+    // create and start a new instance of grizzly http server
+    // exposing the Jersey application
+    HttpServer server = GrizzlyHttpServerFactory.createHttpServer(uri.resolve("/api"), rc, false);
+    
+    CLStaticHttpHandler staticHttpHandler = new CLStaticHttpHandler(Main.class.getClassLoader(), "/static/");
+    staticHttpHandler.setFileCacheEnabled(false);
+    server.getServerConfiguration().addHttpHandler(staticHttpHandler);
+    
+    server.start();
+    return server;
+  }
 
-    /**
-     * Main method.
-     * @param args
-     * @throws IOException
-     */
-    public static void main(String[] args) throws IOException {
-        final HttpServer server = startServer();
-        System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
-        System.in.read();
-        server.stop();
-    }
+  private static URI generateAppUri(int port) {
+    return URI.create("http://localhost:" + port);
+  }
+
+  /**
+   * Main method.
+   */
+  public static void main(String[] args) throws IOException {
+    URI uri = generateAppUri(DEFAULT_PORT);
+    startServer(uri);
+    Logger.getLogger(Main.class.getName()).info("Server running at " + uri);
+    // Desktop.getDesktop().browse(uri);
+  }
 }
