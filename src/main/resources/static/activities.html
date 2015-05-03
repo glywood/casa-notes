@@ -1,0 +1,16 @@
+<h1>Activities</h1>
+<div class="row">
+  <div class="col-xs-3">
+    <div class="btn-group">
+      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        Add Activity <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a ui-sref=".new({long:true})">Child Visit</a></li>
+        <li><a ui-sref=".new">Meeting</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-xs-9" ui-view>
+  </div>
+</div>
