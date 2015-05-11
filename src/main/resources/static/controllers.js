@@ -35,9 +35,10 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router'])
     url: "/activities",
     templateUrl: "activities.html"
   })
-  .state('person.activities.new', {
-    url: "/new",
-    templateUrl: "activity.html"
+  .state('person.activity', {
+    url: "/activity/{activityId}",
+    templateUrl: "activity.html",
+    controller: 'ActivityController'
   })
   .state('person.reports', {
     url: "/reports",
@@ -62,4 +63,11 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router'])
 
 .controller('OverviewController', ['$scope', '$stateParams', function($scope, $stateParams) {
   $scope.personId = $stateParams.personId;
+}])
+
+.controller('ActivityController', ['$scope', '$stateParams', '$state', function($scope, $stateParams, $state) {
+  $scope.save = function() {
+    console.log("would save it here");
+    $state.go("person.activities")
+  };
 }])

@@ -6,8 +6,8 @@
         Add Activity <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
-        <li><a ui-sref=".new({long:true})">Child Visit</a></li>
-        <li><a ui-sref=".new">Meeting</a></li>
+        <li><a ui-sref="person.activity({ activityId: 'new', format: 'Visit' })">Child Visit</a></li>
+        <li><a ui-sref="person.activity({ activityId: 'new' })">Meeting</a></li>
       </ul>
     </div>
   </div>

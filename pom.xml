@@ -31,9 +31,44 @@
             <artifactId>jersey-media-json-jackson</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.zaxxer</groupId>
+	    <artifactId>HikariCP</artifactId>
+	    <version>2.3.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.187</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>3.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.12</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -45,6 +80,74 @@
 
     <build>
         <plugins>
+            <plugin>
+	        <groupId>org.flywaydb</groupId>
+		<artifactId>flyway-maven-plugin</artifactId>
+		<version>3.2.1</version>
+		<executions>
+		    <execution>
+		        <phase>generate-sources</phase>
+			<goals>
+			    <goal>migrate</goal>
+			</goals>
+		    </execution>
+		</executions>
+		<configuration>
+		    <url>${db.url}</url>
+		    <user>${db.username}</user>
+		    <schemas><schema>${db.schema}</schema></schemas>
+		    <locations>
+		        <location>filesystem:src/main/resources/db/migration</location>
+	            </locations>
+		</configuration>
+            </plugin>
+	    <plugin>
+	        <groupId>org.jooq</groupId>
+		<artifactId>jooq-codegen-maven</artifactId>
+		<version>3.6.1</version>
+		<executions>
+		    <execution>
+		        <phase>generate-sources</phase>
+			<goals>
+			    <goal>generate</goal>
+			</goals>
+		    </execution>
+		</executions>
+		<configuration>
+		    <jdbc>
+		        <url>${db.url}</url>
+			<user>${db.username}</user>
+		    </jdbc>
+		    <generator>
+		        <database>
+			    <includes>.*</includes>
+			    <inputSchema>${db.schema}</inputSchema>
+			</database>
+			<target>
+			    <packageName>com.github.glywood.casanotes.db.generated</packageName>
+			    <directory>${project.build.directory}/generated-sources/jooq</directory>
+			</target>
+		    </generator>
+		</configuration>
+	    </plugin>
+	    <plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>build-helper-maven-plugin</artifactId>
+		<executions>
+		    <execution>
+			<id>add-source</id>
+			<phase>generate-sources</phase>
+			<goals>
+			    <goal>add-source</goal>
+			</goals>
+			<configuration>
+			    <sources>
+				<source>${project.build.directory}/generated-sources/jooq/</source>
+			    </sources>
+			</configuration>
+		    </execution>
+		</executions>
+	    </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -76,5 +179,8 @@
     <properties>
         <jersey.version>2.17</jersey.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <db.url>jdbc:h2:${project.build.directory}/flyway-db</db.url>
+        <db.username>sa</db.username>
+        <db.schema>mvn</db.schema>
     </properties>
 </project>
