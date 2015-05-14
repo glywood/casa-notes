@@ -23,7 +23,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -51,7 +50,6 @@ public class ActivitiesResource {
   private final Clock clock;
   private final int personId;
 
-  @Inject
   public ActivitiesResource(DSLContext db, Clock clock, int personId) {
     this.db = db;
     this.clock = clock;
@@ -60,13 +58,16 @@ public class ActivitiesResource {
 
   @GET
   public List<ActivitySummaryJson> getAll() {
-    return db.select(ACTIVITY.ID, ACTIVITY.NAME, ACTIVITY.DATE, ACTIVITY.HOURS).from(ACTIVITY)
+    return db
+        .select(ACTIVITY.ID, ACTIVITY.TYPE, ACTIVITY.DESCRIPTION, ACTIVITY.DATE, ACTIVITY.HOURS)
+        .from(ACTIVITY)
         .where(ACTIVITY.PERSON_ID.eq(personId)).fetch(record -> {
           ActivitySummaryJson json = new ActivitySummaryJson();
           json.id = record.value1();
-          json.name = record.value2();
-          json.date = record.value3();
-          json.hours = record.value4();
+          json.type = record.value2();
+          json.description = record.value3();
+          json.date = record.value4();
+          json.hours = record.value5();
           return json;
     });
   }
@@ -76,24 +77,25 @@ public class ActivitiesResource {
   public ActivityJson get(@PathParam("id") int id) {
     ActivityJson result = db.selectFrom(ACTIVITY).where(ACTIVITY.ID.eq(id))
         .and(ACTIVITY.PERSON_ID.eq(personId)).fetchOne(record -> {
-      ActivityJson json = new ActivityJson();
-      json.id = record.getId();
-      json.name = record.getName();
-      json.date = record.getDate();
-      json.hours = record.getHours();
-      json.summary = record.getSummary();
-      json.successes = record.getSuccesses();
-      json.concerns = record.getConcerns();
-      json.selfesteem = record.getSelfesteem();
-      json.trust = record.getTrust();
-      json.cultural = record.getCultural();
-      json.experiences = record.getExperiences();
-      json.educational = record.getEducational();
-      json.extracurricular = record.getExtracurricular();
-      json.healthy = record.getHealthy();
-      json.milestones = record.getMilestones();
-      return json;
-    });
+          ActivityJson json = new ActivityJson();
+          json.id = record.getId();
+          json.description = record.getDescription();
+          json.type = record.getType();
+          json.date = record.getDate();
+          json.hours = record.getHours();
+          json.summary = record.getSummary();
+          json.successes = record.getSuccesses();
+          json.concerns = record.getConcerns();
+          json.selfesteem = record.getSelfesteem();
+          json.trust = record.getTrust();
+          json.cultural = record.getCultural();
+          json.experiences = record.getExperiences();
+          json.educational = record.getEducational();
+          json.extracurricular = record.getExtracurricular();
+          json.healthy = record.getHealthy();
+          json.milestones = record.getMilestones();
+          return json;
+        });
     if (result == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -109,8 +111,9 @@ public class ActivitiesResource {
     Instant now = Instant.now(clock);
     ActivityRecord record = ACTIVITY.newRecord();
     record.setPersonId(personId);
+    record.setType(json.type);
     record.setModifiedAt(now);
-    record.setName(json.name);
+    record.setDescription(json.description);
     record.setDate(json.date);
     record.setHours(json.hours);
     record.setSummary(json.summary);

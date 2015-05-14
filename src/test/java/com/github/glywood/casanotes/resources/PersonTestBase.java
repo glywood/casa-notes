@@ -19,29 +19,29 @@ package com.github.glywood.casanotes.resources;
 
 import javax.ws.rs.client.WebTarget;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 
 import com.github.glywood.casanotes.json.PersonJson;
 
 public class PersonTestBase extends ResourceTestBase {
 
-  private static int personId;
+  private int personId;
 
-  @BeforeClass
-  public static void createFakePerson() {
+  @Before
+  public void createFakePerson() {
     PersonJson request = new PersonJson();
     request.name = "Geoff Lywood";
     PersonJson response = target().path("people").request().post(entity(request), PersonJson.class);
     personId = response.id;
   }
 
-  @AfterClass
-  public static void deleteFakePerson() {
+  @After
+  public void deleteFakePerson() {
     target().path("people/" + personId).request().delete();
   }
 
-  protected static WebTarget person() {
+  protected WebTarget person() {
     return target().path("people/" + personId);
   }
 }

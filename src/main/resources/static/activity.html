@@ -1,12 +1,12 @@
-<h1>Activity Details</h1>
+<h1>{{activity.type}} Details</h1>
 <div ng-if="error" class="alert alert-danger" role="alert">
   {{error}}
 </div>
 <form class="form-horizontal" name="activityForm" novalidate>
-  <div class="form-group" ng-class="{ 'has-error' : activityForm.name.$invalid && activityForm.name.$touched }">
-    <label for="name" class="col-sm-2 control-label">Activity Name</label>
+  <div class="form-group" ng-class="{ 'has-error' : activityForm.description.$invalid && activityForm.description.$touched }">
+    <label for="description" class="col-sm-2 control-label">Description</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" id="name" name="name" ng-model="activity.name" required>
+      <input type="text" class="form-control" id="description" name="description" ng-model="activity.description" required>
     </div>
   </div>
 
@@ -22,6 +22,9 @@
     <div class="col-sm-4">
       <input type="number" class="form-control" id="hours" name="hours" ng-model="activity.hours" required>
     </div>
+  </div>
+
+  <div class="form-group" ng-class="">
   </div>
 
   <div class="form-group">
@@ -45,7 +48,7 @@
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group" ng-show="activity.type === 'Visit'">
     <label class="col-sm-2 control-label">Key Areas</label>
     <div class="col-sm-5">
       <div class="checkbox">

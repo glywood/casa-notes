@@ -17,8 +17,6 @@
  */
 package com.github.glywood.casanotes.resources;
 
-import static com.github.glywood.casanotes.db.generated.Tables.PERSON;
-
 import java.time.Clock;
 
 import javax.ws.rs.Consumes;
@@ -29,27 +27,34 @@ import javax.ws.rs.core.MediaType;
 
 import org.jooq.DSLContext;
 
+import com.github.glywood.casanotes.db.generated.tables.records.PersonRecord;
+
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class PersonResource {
 
   private final DSLContext db;
   private final Clock clock;
-  private final int personId;
+  private final PersonRecord person;
 
-  public PersonResource(DSLContext db, Clock clock, int personId) {
+  public PersonResource(DSLContext db, Clock clock, PersonRecord person) {
     this.db = db;
     this.clock = clock;
-    this.personId = personId;
+    this.person = person;
   }
 
   @DELETE
   public void delete() {
-    db.delete(PERSON).where(PERSON.ID.eq(personId)).execute();
+    person.delete();
   }
 
   @Path("activities")
   public ActivitiesResource activities() {
-    return new ActivitiesResource(db, clock, personId);
+    return new ActivitiesResource(db, clock, person.getId());
+  }
+
+  @Path("reports")
+  public ReportsResource reports() {
+    return new ReportsResource(db, person.getId());
   }
 }

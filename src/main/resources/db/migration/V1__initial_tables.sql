@@ -6,7 +6,8 @@ CREATE TABLE person (
 CREATE TABLE activity (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   person_id INT NOT NULL,
-  name VARCHAR NOT NULL,
+  type VARCHAR NOT NULL,
+  description VARCHAR NOT NULL,
   date DATE NOT NULL,
   hours DOUBLE NOT NULL,
   summary VARCHAR NOT NULL,

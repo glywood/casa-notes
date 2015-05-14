@@ -12,9 +12,7 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
       "personHeader": { template: "" },
       "mainView": {
         templateUrl: "chooser.html",
-        controller: function($scope) {
-          $scope.people = [{"name":"Geoff Lywood", "id":1}];
-        }
+        controller: 'ChooserController'
       }
     }
   })
@@ -37,7 +35,7 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
     controller: 'ActivitiesController'
   })
   .state('person.activity', {
-    url: "/activity/{activityId}",
+    url: "/activity/{activityId}?type",
     templateUrl: "activity.html",
     controller: 'ActivityController'
   })
@@ -61,6 +59,32 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
     }
   });
 })
+
+.controller('ChooserController', ['$scope', '$stateParams', '$state', '$resource',
+    function($scope, $stateParams, $state, $resource) {
+
+  var PeopleResource = $resource("/api/people/:personId")
+
+  $scope.loading = true
+  PeopleResource.query(function(people) {
+    $scope.people = people
+    $scope.loading = false
+  }, function(response) {
+    $scope.error = response.data
+    $scope.loading = false
+  })
+
+  $scope.addPerson = function() {
+    $scope.loading = true
+    PeopleResource.save($scope.toAdd, function(newPerson) {
+      $scope.people.push(newPerson)
+      $scope.loading = false
+    }, function(response) {
+      $scope.error = response.data
+      $scope.loading = false
+    })
+  }
+}])
 
 .controller('OverviewController', ['$scope', '$stateParams', function($scope, $stateParams) {
   $scope.personId = $stateParams.personId;
@@ -100,6 +124,7 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
     })
   } else {
     $scope.activity = {
+      type: $stateParams.type,
       summary: '',
       successes: '',
       concerns: ''

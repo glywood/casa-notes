@@ -9,17 +9,17 @@
         Add Activity <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
-        <li><a ui-sref="person.activity({ activityId: 'new', activityType: 'Visit' })">Child Visit</a></li>
-        <li><a ui-sref="person.activity({ activityId: 'new', activityType: 'Meeting' })">Meeting</a></li>
+        <li><a ui-sref="person.activity({ activityId: 'new', type: 'Visit' })">Child Visit</a></li>
+        <li><a ui-sref="person.activity({ activityId: 'new', type: 'Meeting' })">Meeting</a></li>
       </ul>
     </div>
   </div>
   <div class="col-sm-9">
     <table class="table">
-      <tr><th>Date</th><th>Name</th><th>Hours</th></tr>
+      <tr><th>Date</th><th>Description</th><th>Hours</th></tr>
       <tr ng-repeat="activity in activities">
         <td>{{activity.date}}</td>
-        <td><a ui-sref="person.activity({activityId: activity.id, activityType: 'Visit'})">{{activity.name}}</a></td>
+        <td><a ui-sref="person.activity({activityId: activity.id, type: activity.type})">{{activity.description}}</a></td>
         <td>{{activity.hours}}</td>
       </tr>
     </table>

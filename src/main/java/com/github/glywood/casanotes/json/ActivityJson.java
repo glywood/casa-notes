@@ -30,10 +30,14 @@ public class ActivityJson {
   @JsonProperty("id")
   public Integer id;
 
-  @JsonProperty("name")
+  @JsonProperty("type")
+  @NotNull
+  public String type;
+
+  @JsonProperty("description")
   @NotNull
   @Length(min = 1)
-  public String name;
+  public String description;
 
   @JsonProperty("date")
   @NotNull

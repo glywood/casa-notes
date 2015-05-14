@@ -74,7 +74,7 @@ public class PeopleResource {
       json.id = db.insertInto(PERSON).set(record).returning(PERSON.ID).fetchOne().getId();
     } else {
       record.setId(json.id);
-      int updated = db.update(PERSON).set(record).execute();
+      int updated = db.update(PERSON).set(record).where(PERSON.ID.eq(json.id)).execute();
       if (updated != 1) {
         throw new WebApplicationException("Person not found", Status.NOT_FOUND);
       }
@@ -84,6 +84,10 @@ public class PeopleResource {
 
   @Path("{personId}")
   public PersonResource personResource(@PathParam("personId") int personId) {
-    return new PersonResource(db, clock, personId);
+    PersonRecord record = db.selectFrom(PERSON).where(PERSON.ID.eq(personId)).fetchOne();
+    if (record == null) {
+      throw new WebApplicationException("No such person", Status.NOT_FOUND);
+    }
+    return new PersonResource(db, clock, record);
   }
 }

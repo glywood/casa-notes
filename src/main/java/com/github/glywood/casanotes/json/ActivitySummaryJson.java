@@ -26,8 +26,11 @@ public class ActivitySummaryJson {
   @JsonProperty("id")
   public int id;
 
-  @JsonProperty("name")
-  public String name;
+  @JsonProperty("type")
+  public String type;
+
+  @JsonProperty("description")
+  public String description;
 
   @JsonProperty("date")
   public LocalDate date;

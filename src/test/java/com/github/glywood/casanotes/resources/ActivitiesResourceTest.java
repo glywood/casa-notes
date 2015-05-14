@@ -44,7 +44,8 @@ public class ActivitiesResourceTest extends PersonTestBase {
   @Test
   public void addEmptyName() {
     ActivityJson toCreate = new ActivityJson();
-    toCreate.name = "";
+    toCreate.description = "";
+    toCreate.type = "Visit";
     toCreate.date = LocalDate.now(clock());
     toCreate.summary = "blarg";
     toCreate.successes = "none";
@@ -56,7 +57,8 @@ public class ActivitiesResourceTest extends PersonTestBase {
   @Test
   public void addNegativeHours() {
     ActivityJson toCreate = new ActivityJson();
-    toCreate.name = "fdsa";
+    toCreate.description = "fdsa";
+    toCreate.type = "Visit";
     toCreate.date = LocalDate.now(clock());
     toCreate.hours = -.05;
     toCreate.summary = "blarg";
@@ -69,7 +71,8 @@ public class ActivitiesResourceTest extends PersonTestBase {
   @Test
   public void addThenGet() {
     ActivityJson toCreate = new ActivityJson();
-    toCreate.name = "fdsa";
+    toCreate.description = "fdsa";
+    toCreate.type = "Visit";
     toCreate.date = LocalDate.now(clock());
     toCreate.hours = 2.5;
     toCreate.summary = "blarg";
@@ -77,17 +80,19 @@ public class ActivitiesResourceTest extends PersonTestBase {
     toCreate.concerns = "nothing";
     toCreate.educational = true;
     Response postResponse = activities().post(entity(toCreate));
-    assertEquals(204, postResponse.getStatus());
+    assertEquals(200, postResponse.getStatus());
 
     List<ActivitySummaryJson> summaries = activities().get(
         new GenericType<List<ActivitySummaryJson>>() {});
     assertEquals(1, summaries.size());
-    assertEquals("fdsa", summaries.get(0).name);
+    assertEquals("fdsa", summaries.get(0).description);
     assertEquals(LocalDate.now(clock()), summaries.get(0).date);
     assertEquals(2.5, summaries.get(0).hours, 0.0);
 
-    ActivityJson getResponse = activity(summaries.get(0).id).get(ActivityJson.class);
-    assertEquals("fdsa", getResponse.name);
+    Integer createdId = postResponse.readEntity(ActivityJson.class).id;
+    assertNotNull(createdId);
+    ActivityJson getResponse = activity(createdId).get(ActivityJson.class);
+    assertEquals("fdsa", getResponse.description);
     assertNotNull(getResponse.id);
     assertEquals(LocalDate.now(clock()), getResponse.date);
     assertEquals(true, getResponse.educational);
