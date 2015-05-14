@@ -19,6 +19,7 @@ package com.github.glywood.casanotes;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Clock;
 import java.util.logging.Logger;
 
 import javax.inject.Singleton;
@@ -32,6 +33,10 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jooq.DSLContext;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import com.github.glywood.casanotes.db.DataSourceFactory;
+import com.github.glywood.casanotes.db.DslContextFactory;
+import com.github.glywood.casanotes.json.ser.ObjectMapperProvider;
 
 
 /**
@@ -49,7 +54,7 @@ public class Main {
    *
    * @return Grizzly HTTP server.
    */
-  public static HttpServer startServer(URI uri, String jdbcUrl) throws IOException {
+  public static HttpServer startServer(URI uri, String jdbcUrl, Clock clock) throws IOException {
     if (!SLF4JBridgeHandler.isInstalled()) {
       SLF4JBridgeHandler.removeHandlersForRootLogger();
       SLF4JBridgeHandler.install();
@@ -61,6 +66,7 @@ public class Main {
       protected void configure() {
         bindFactory(new DataSourceFactory(jdbcUrl)).to(DataSource.class).in(Singleton.class);
         bindFactory(DslContextFactory.class).to(DSLContext.class).in(Singleton.class);
+        bind(clock).to(Clock.class);
       }
     };
 
@@ -69,6 +75,8 @@ public class Main {
     final ResourceConfig rc = new ResourceConfig()
         .packages("com.github.glywood.casanotes.resources")
         .register(binder)
+        .register(LoggingExceptionMapper.class)
+        .register(ObjectMapperProvider.class)
         .property("jersey.config.server.wadl.disableWadl", "true");
 
     // create and start a new instance of grizzly http server
@@ -92,7 +100,7 @@ public class Main {
    */
   public static void main(String[] args) throws IOException {
     URI uri = generateAppUri(DEFAULT_PORT);
-    startServer(uri, JDBC_URL);
+    startServer(uri, JDBC_URL, Clock.systemUTC());
     Logger.getLogger(Main.class.getName()).info("Server running at " + uri);
     // Desktop.getDesktop().browse(uri);
   }

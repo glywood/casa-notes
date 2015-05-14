@@ -1,16 +1,27 @@
 <h1>Activities</h1>
+<div ng-if="error" class="alert alert-danger" role="alert">
+  {{error}}
+</div>
 <div class="row">
-  <div class="col-xs-3">
+  <div class="col-sm-3">
     <div class="btn-group">
       <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
         Add Activity <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
-        <li><a ui-sref="person.activity({ activityId: 'new', format: 'Visit' })">Child Visit</a></li>
-        <li><a ui-sref="person.activity({ activityId: 'new' })">Meeting</a></li>
+        <li><a ui-sref="person.activity({ activityId: 'new', activityType: 'Visit' })">Child Visit</a></li>
+        <li><a ui-sref="person.activity({ activityId: 'new', activityType: 'Meeting' })">Meeting</a></li>
       </ul>
     </div>
   </div>
-  <div class="col-xs-9" ui-view>
+  <div class="col-sm-9">
+    <table class="table">
+      <tr><th>Date</th><th>Name</th><th>Hours</th></tr>
+      <tr ng-repeat="activity in activities">
+        <td>{{activity.date}}</td>
+        <td><a ui-sref="person.activity({activityId: activity.id, activityType: 'Visit'})">{{activity.name}}</a></td>
+        <td>{{activity.hours}}</td>
+      </tr>
+    </table>
   </div>
 </div>

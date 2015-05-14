@@ -17,39 +17,31 @@
  */
 package com.github.glywood.casanotes.resources;
 
-import static org.junit.Assert.assertEquals;
+import javax.ws.rs.client.WebTarget;
 
-import java.util.List;
-
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-
-import org.junit.Test;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import com.github.glywood.casanotes.json.PersonJson;
 
-public class PeopleResourceTest extends ResourceTestBase {
+public class PersonTestBase extends ResourceTestBase {
 
-  @Test
-  public void add() {
-    PersonJson json = new PersonJson();
-    json.name = "GEOFF LYWOOD";
-    Response response = peopleResource().post(entity(json));
+  private static int personId;
 
-    assertEquals(200, response.getStatus());
-
-    List<PersonJson> newResult = peopleResource().get(new GenericType<List<PersonJson>>() {});
-    assertEquals(1, newResult.size());
+  @BeforeClass
+  public static void createFakePerson() {
+    PersonJson request = new PersonJson();
+    request.name = "Geoff Lywood";
+    PersonJson response = target().path("people").request().post(entity(request), PersonJson.class);
+    personId = response.id;
   }
 
-  @Test
-  public void emptyList() {
-    List<PersonJson> newResult = peopleResource().get(new GenericType<List<PersonJson>>() {});
-    assertEquals(0, newResult.size());
+  @AfterClass
+  public static void deleteFakePerson() {
+    target().path("people/" + personId).request().delete();
   }
 
-  private Invocation.Builder peopleResource() {
-    return target().path("/people").request();
+  protected static WebTarget person() {
+    return target().path("people/" + personId);
   }
 }

@@ -17,6 +17,9 @@
  */
 package com.github.glywood.casanotes.resources;
 
+import static com.github.glywood.casanotes.db.generated.Tables.PERSON;
+
+import java.time.Clock;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,6 +27,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -32,11 +36,8 @@ import javax.ws.rs.core.Response.Status;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import com.github.glywood.casanotes.db.generated.Tables;
 import com.github.glywood.casanotes.db.generated.tables.records.PersonRecord;
 import com.github.glywood.casanotes.json.PersonJson;
-
-
 
 
 @Path("/people")
@@ -45,16 +46,18 @@ import com.github.glywood.casanotes.json.PersonJson;
 public class PeopleResource {
 
   private final DSLContext db;
+  private final Clock clock;
 
   @Inject
-  public PeopleResource(DSLContext db) {
+  public PeopleResource(DSLContext db, Clock clock) {
     this.db = db;
+    this.clock = clock;
   }
 
   @GET
   public List<PersonJson> getAll() {
     return db.transactionResult(configuration -> {
-      return DSL.using(configuration).selectFrom(Tables.PERSON).fetch(record -> {
+      return DSL.using(configuration).selectFrom(PERSON).fetch(record -> {
         PersonJson json = new PersonJson();
         json.id = record.getId();
         json.name = record.getName();
@@ -64,15 +67,23 @@ public class PeopleResource {
   }
 
   @POST
-  public void add(PersonJson json) {
-    if (json.id != null) {
-      throw new WebApplicationException("Cannot specify an ID when adding a person", Status.BAD_REQUEST);
+  public PersonJson save(PersonJson json) {
+    PersonRecord record = new PersonRecord();
+    record.setName(json.name);
+    if (json.id == null) {
+      json.id = db.insertInto(PERSON).set(record).returning(PERSON.ID).fetchOne().getId();
+    } else {
+      record.setId(json.id);
+      int updated = db.update(PERSON).set(record).execute();
+      if (updated != 1) {
+        throw new WebApplicationException("Person not found", Status.NOT_FOUND);
+      }
     }
+    return json;
+  }
 
-    db.transaction(configuration -> {
-      PersonRecord record = new PersonRecord();
-      record.setName(json.name);
-      DSL.using(configuration).insertInto(Tables.PERSON).set(record).execute();
-    });
+  @Path("{personId}")
+  public PersonResource personResource(@PathParam("personId") int personId) {
+    return new PersonResource(db, clock, personId);
   }
 }

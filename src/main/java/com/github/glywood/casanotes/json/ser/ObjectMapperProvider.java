@@ -15,33 +15,28 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package com.github.glywood.casanotes;
+package com.github.glywood.casanotes.json.ser;
 
-import javax.inject.Inject;
-import javax.sql.DataSource;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 
-import org.glassfish.hk2.api.Factory;
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.conf.Settings;
-import org.jooq.impl.DSL;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 
-public class DslContextFactory implements Factory<DSLContext> {
+@Provider
+public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
-  private final DataSource dataSource;
+  private final ObjectMapper objectMapper;
 
-  @Inject
-  public DslContextFactory(DataSource dataSource) {
-    this.dataSource = dataSource;
+  public ObjectMapperProvider() {
+    objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JSR310Module());
+    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
   }
 
   @Override
-  public DSLContext provide() {
-    Settings settings = new Settings().withRenderSchema(false);
-    return DSL.using(dataSource, SQLDialect.H2, settings);
-  }
-
-  @Override
-  public void dispose(DSLContext dbi) {
+  public ObjectMapper getContext(Class<?> type) {
+    return objectMapper;
   }
 }

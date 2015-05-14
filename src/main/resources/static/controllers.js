@@ -1,4 +1,4 @@
-var casaNotesApp = angular.module('casaNotesApp', ['ui.router'])
+var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
 .config(function($stateProvider, $urlRouterProvider) {
 
   // For any unmatched url, redirect to /chooser
@@ -33,7 +33,8 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router'])
   })
   .state('person.activities', {
     url: "/activities",
-    templateUrl: "activities.html"
+    templateUrl: "activities.html",
+    controller: 'ActivitiesController'
   })
   .state('person.activity', {
     url: "/activity/{activityId}",
@@ -65,9 +66,59 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router'])
   $scope.personId = $stateParams.personId;
 }])
 
-.controller('ActivityController', ['$scope', '$stateParams', '$state', function($scope, $stateParams, $state) {
+.controller('ActivitiesController', ['$scope', '$stateParams', '$resource',
+    function($scope, $stateParams, $resource) {
+
+  var ActivitiesResource = $resource("/api/people/:personId/activities",
+      {personId: $stateParams.personId})
+
+  $scope.loading = true
+  $scope.activities = []
+  ActivitiesResource.query(function(activities) {
+    $scope.activities = activities
+    $scope.loading = false
+  }, function(response) {
+    $scope.error = response.data
+    $scope.loading = false
+  })
+}])
+
+.controller('ActivityController', ['$scope', '$stateParams', '$state', '$resource',
+    function($scope, $stateParams, $state, $resource) {
+
+  var ActivityResource = $resource("/api/people/:personId/activities/:id",
+      {personId: $stateParams.personId})
+
+  if ($stateParams.activityId !== 'new') {
+    $scope.loading = true
+    ActivityResource.get({id: $stateParams.activityId}, function(activity) {
+      $scope.activity = activity
+      $scope.loading = false
+    }, function(response) {
+      $scope.error = response.data
+      $scope.loading = false
+    })
+  } else {
+    $scope.activity = {
+      summary: '',
+      successes: '',
+      concerns: ''
+    }
+  }
+
   $scope.save = function() {
-    console.log("would save it here");
-    $state.go("person.activities")
-  };
+    ActivityResource.save($scope.activity, function() {
+      $state.go("person.activities")
+    }, function(response) {
+      $scope.error = response.data
+    })
+  }
+
+  $scope.delete = function() {
+    ActivityResource.delete({id: $stateParams.activityId}, function(activity) {
+      $state.go("person.activities")
+    }, function(response) {
+      $scope.error = response.data
+    })
+  }
 }])

@@ -26,9 +26,33 @@
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-grizzly2-http</artifactId>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-bean-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+	    <artifactId>jackson-annotations</artifactId>
+	    <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+	    <artifactId>jackson-jaxrs-base</artifactId>
+	    <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+	    <artifactId>jackson-jaxrs-json-provider</artifactId>
+	    <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+	    <artifactId>jackson-datatype-jsr310</artifactId>
+	    <version>2.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -122,6 +146,30 @@
 		        <database>
 			    <includes>.*</includes>
 			    <inputSchema>${db.schema}</inputSchema>
+			    <customTypes>
+			        <customType>
+				    <name>LocalDate</name>
+				    <type>java.time.LocalDate</type>
+				    <converter>com.github.glywood.casanotes.db.LocalDateConverter</converter>
+				</customType>
+			        <customType>
+				    <name>Instant</name>
+				    <type>java.time.Instant</type>
+				    <converter>com.github.glywood.casanotes.db.InstantConverter</converter>
+				</customType>
+			    </customTypes>
+			    <forcedTypes>
+			        <forcedType>
+				    <name>LocalDate</name>
+				    <expression>.*DATE</expression>
+				    <types>DATE</types>
+				</forcedType>
+			        <forcedType>
+				    <name>Instant</name>
+				    <expression>.*_AT</expression>
+				    <types>TIMESTAMP</types>
+				</forcedType>
+			    </forcedTypes>
 			</database>
 			<target>
 			    <packageName>com.github.glywood.casanotes.db.generated</packageName>
