@@ -61,7 +61,9 @@ public class ActivitiesResource {
     return db
         .select(ACTIVITY.ID, ACTIVITY.TYPE, ACTIVITY.DESCRIPTION, ACTIVITY.DATE, ACTIVITY.HOURS)
         .from(ACTIVITY)
-        .where(ACTIVITY.PERSON_ID.eq(personId)).fetch(record -> {
+        .where(ACTIVITY.PERSON_ID.eq(personId))
+        .orderBy(ACTIVITY.DATE)
+        .fetch(record -> {
           ActivitySummaryJson json = new ActivitySummaryJson();
           json.id = record.value1();
           json.type = record.value2();

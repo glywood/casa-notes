@@ -41,7 +41,8 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
   })
   .state('person.reports', {
     url: "/reports",
-    templateUrl: "reports.html"
+    templateUrl: "reports.html",
+    controller: 'ReportsController'
   })
   .state('person.timeline', {
     url: "/timeline",
@@ -145,5 +146,24 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
     }, function(response) {
       $scope.error = response.data
     })
+  }
+}])
+
+.controller('ReportsController', ['$scope', '$stateParams', '$resource',
+    function($scope, $stateParams, $resource) {
+  
+  var ReportsResource = $resource("/api/people/:personId/reports")
+
+  $scope.update = function() {
+    $scope.report = undefined
+    if (/\d\d\d\d-\d\d-\d\d/.test($scope.start)
+        && /\d\d\d\d-\d\d-\d\d/.test($scope.end)) {
+      ReportsResource.get({personId: $stateParams.personId, start: $scope.start, end: $scope.end},
+      function(report) {
+        $scope.report = report
+      }, function(response) {
+        $scope.error = response.data
+      })
+    }
   }
 }])

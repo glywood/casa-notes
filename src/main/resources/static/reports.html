@@ -1,5 +1,53 @@
 <h1>Reports</h1>
-<div class="row">
-  <div class="col-xs-12">
+<form class="form-horizontal">
+  <div class="form-group">
+    <label for="start" class="col-sm-2 control-label">Start</label>
+    <div class="col-sm-4">
+      <input class="form-control" id="start" name="start" ng-model="start" ng-change="update()" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-autoclose="true" data-date-orientation="top" required>
+    </div>
   </div>
-</div>
+
+  <div class="form-group">
+    <label for="end" class="col-sm-2 control-label">End</label>
+    <div class="col-sm-4">
+      <input class="form-control" id="end" name="end" ng-model="end" ng-change="update()" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-autoclose="true" data-date-orientation="top" required>
+    </div>
+  </div>
+
+  <div ng-if="report">
+    <div class="form-group">
+      <label for="hours" class="col-sm-2 control-label">Hours</label>
+      <div class="col-sm-10">
+        <input id="hours" class="form-control" ng-model="report.hours" readonly>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="successes" class="col-sm-2 control-label">Successes</label>
+      <div class="col-sm-10">
+        <textarea id="successes" class="form-control" rows="10" readonly>{{report.successes}}</textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="concerns" class="col-sm-2 control-label">Concerns</label>
+      <div class="col-sm-10">
+        <textarea id="concerns" class="form-control" rows="10" readonly>{{report.concerns}}</textarea>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Key Areas</label>
+      <ul class="col-sm-10">
+        <li ng-if="report.selfesteem">Self-Esteem Building</li>
+        <li ng-if="report.trust">Trust &amp; Relationship Building</li>
+        <li ng-if="report.cultural">Cultural &amp; Community Events</li>
+        <li ng-if="report.experiences">New Experiences</li>
+        <li ng-if="report.educational">Educational Support</li>
+        <li ng-if="report.extracurricular">Extracurricular Activities</li>
+        <li ng-if="report.healthy">Healthy Choices &amp; Behaviors</li>
+        <li ng-if="report.milestones">Developmental Milestones/Independent Living Skills</li>
+      </ul>
+    </div>
+  </div>
+</form>

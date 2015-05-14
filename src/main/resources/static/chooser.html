@@ -1,9 +1,9 @@
-<h1>Choose a Person</h1>
+<h1>Select a Child</h1>
 <div class="row">
   <div class="col-sm-6">
     <ul>
       <li ng-repeat="person in people">
-        <a ui-ssref="person.activities({ personId: person.id })">{{person.name}}</a>
+        <a ui-sref="person.activities({ personId: person.id })">{{person.name}}</a>
       </li>
     </ul>
   </div>
