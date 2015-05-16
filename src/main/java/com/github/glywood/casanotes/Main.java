@@ -27,8 +27,8 @@ import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 import org.apache.log4j.BasicConfigurator;
+import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -84,7 +84,8 @@ public class Main {
     // exposing the Jersey application
     HttpServer server = GrizzlyHttpServerFactory.createHttpServer(uri.resolve("/api"), rc, false);
 
-    StaticHttpHandler staticHttpHandler = new StaticHttpHandler("src/main/resources/static/");
+    CLStaticHttpHandler staticHttpHandler = new CLStaticHttpHandler(Main.class.getClassLoader(),
+        "static/");
     staticHttpHandler.setFileCacheEnabled(false);
     server.getServerConfiguration().addHttpHandler(staticHttpHandler);
 
