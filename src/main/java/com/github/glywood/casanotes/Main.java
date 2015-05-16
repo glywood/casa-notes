@@ -17,6 +17,7 @@
  */
 package com.github.glywood.casanotes;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Clock;
@@ -100,8 +101,12 @@ public class Main {
    */
   public static void main(String[] args) throws IOException {
     URI uri = generateAppUri(DEFAULT_PORT);
-    startServer(uri, JDBC_URL, Clock.systemUTC());
-    Logger.getLogger(Main.class.getName()).info("Server running at " + uri);
-    // Desktop.getDesktop().browse(uri);
+    try {
+      startServer(uri, JDBC_URL, Clock.systemUTC());
+      Logger.getLogger(Main.class.getName()).info("Server running at " + uri);
+    } catch (IOException e) {
+      Logger.getLogger(Main.class.getName()).info("Something already running on " + uri);
+    }
+    Desktop.getDesktop().browse(uri);
   }
 }
