@@ -46,7 +46,7 @@ public class ResourceTestBase {
     clock = Clock.fixed(Instant.parse("2015-03-22T13:45:23Z"), ZoneOffset.UTC);
 
     // start the server
-    server = Main.startServer(uri, "jdbc:h2:mem:test", clock);
+    server = Main.startServer(uri, "jdbc:h2:mem:test", clock, null);
 
     // create the client
     client = ClientBuilder.newClient().register(ObjectMapperProvider.class);

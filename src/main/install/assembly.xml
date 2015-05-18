@@ -1,0 +1,40 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  <id>macbundle</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <baseDirectory>CASA Notes.app</baseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${project.basedir}/src/main/install</directory>
+      <outputDirectory>Contents</outputDirectory>
+      <includes>
+        <include>Info.plist</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/install</directory>
+      <outputDirectory>Contents/MacOS</outputDirectory>
+      <fileMode>0755</fileMode>
+      <includes>
+        <include>launch.sh</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources/static</directory>
+      <outputDirectory>Contents/Web</outputDirectory>
+      <includes>
+	<include>**</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>Contents/Resources</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <scope>runtime</scope>
+    </dependencySet>
+  </dependencySets>
+</assembly>

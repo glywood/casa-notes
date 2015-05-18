@@ -27,8 +27,8 @@ import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 import org.apache.log4j.BasicConfigurator;
-import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -55,7 +55,8 @@ public class Main {
    *
    * @return Grizzly HTTP server.
    */
-  public static HttpServer startServer(URI uri, String jdbcUrl, Clock clock) throws IOException {
+  public static HttpServer startServer(URI uri, String jdbcUrl, Clock clock, String webDir)
+      throws IOException {
     if (!SLF4JBridgeHandler.isInstalled()) {
       SLF4JBridgeHandler.removeHandlersForRootLogger();
       SLF4JBridgeHandler.install();
@@ -84,10 +85,11 @@ public class Main {
     // exposing the Jersey application
     HttpServer server = GrizzlyHttpServerFactory.createHttpServer(uri.resolve("/api"), rc, false);
 
-    CLStaticHttpHandler staticHttpHandler = new CLStaticHttpHandler(Main.class.getClassLoader(),
-        "static/");
-    staticHttpHandler.setFileCacheEnabled(false);
-    server.getServerConfiguration().addHttpHandler(staticHttpHandler);
+    if (webDir != null) {
+      StaticHttpHandler staticHttpHandler = new StaticHttpHandler(webDir);
+      staticHttpHandler.setFileCacheEnabled(false);
+      server.getServerConfiguration().addHttpHandler(staticHttpHandler);
+    }
 
     server.start();
     return server;
@@ -103,7 +105,7 @@ public class Main {
   public static void main(String[] args) throws IOException {
     URI uri = generateAppUri(DEFAULT_PORT);
     try {
-      startServer(uri, JDBC_URL, Clock.systemUTC());
+      startServer(uri, JDBC_URL, Clock.systemUTC(), args[0]);
       Logger.getLogger(Main.class.getName()).info("Server running at " + uri);
     } catch (IOException e) {
       Logger.getLogger(Main.class.getName()).info("Something already running on " + uri);
