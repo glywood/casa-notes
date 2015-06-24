@@ -1,5 +1,9 @@
 var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
+
+  // All HTTP requests should have the X-Requested-By header to prevent CSRF
+  // This is the Jersey style of CSRF protection, not the Angular style
+  $httpProvider.defaults.headers.common['X-Requested-By'] = "CASA Notes";
 
   // For any unmatched url, redirect to /chooser
   $urlRouterProvider.otherwise("/chooser");
@@ -151,7 +155,7 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
 
 .controller('ReportsController', ['$scope', '$stateParams', '$resource',
     function($scope, $stateParams, $resource) {
-  
+
   var ReportsResource = $resource("/api/people/:personId/reports")
 
   $scope.update = function() {

@@ -21,7 +21,6 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Clock;
-import java.util.logging.Logger;
 
 import javax.inject.Singleton;
 import javax.sql.DataSource;
@@ -32,7 +31,9 @@ import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.CsrfProtectionFilter;
 import org.jooq.DSLContext;
+import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.github.glywood.casanotes.db.DataSourceFactory;
@@ -49,6 +50,14 @@ public class Main {
 
   public static final String JDBC_URL = "jdbc:h2:~/.casanotes/notes";
 
+  public static void setupLogger() {
+    if (!SLF4JBridgeHandler.isInstalled()) {
+      SLF4JBridgeHandler.removeHandlersForRootLogger();
+      SLF4JBridgeHandler.install();
+      BasicConfigurator.configure();
+    }
+  }
+
   /**
    * Starts Grizzly HTTP server exposing JAX-RS resources defined in this
    * application.
@@ -57,12 +66,6 @@ public class Main {
    */
   public static HttpServer startServer(URI uri, String jdbcUrl, Clock clock, String webDir)
       throws IOException {
-    if (!SLF4JBridgeHandler.isInstalled()) {
-      SLF4JBridgeHandler.removeHandlersForRootLogger();
-      SLF4JBridgeHandler.install();
-      BasicConfigurator.configure();
-    }
-
     AbstractBinder binder = new AbstractBinder() {
       @Override
       protected void configure() {
@@ -79,6 +82,7 @@ public class Main {
         .register(binder)
         .register(LoggingExceptionMapper.class)
         .register(ObjectMapperProvider.class)
+        .register(CsrfProtectionFilter.class)
         .property("jersey.config.server.wadl.disableWadl", "true");
 
     // create and start a new instance of grizzly http server
@@ -103,13 +107,29 @@ public class Main {
    * Main method.
    */
   public static void main(String[] args) throws IOException {
+    setupLogger();
     URI uri = generateAppUri(DEFAULT_PORT);
     try {
       startServer(uri, JDBC_URL, Clock.systemUTC(), args[0]);
-      Logger.getLogger(Main.class.getName()).info("Server running at " + uri);
+      LoggerFactory.getLogger(Main.class.getName()).info("Server running at " + uri);
     } catch (IOException e) {
-      Logger.getLogger(Main.class.getName()).info("Something already running on " + uri);
+      LoggerFactory.getLogger(Main.class.getName()).info("Something already running on " + uri);
     }
     Desktop.getDesktop().browse(uri);
+
+    registerDockHandler(uri);
+  }
+
+  /**
+   * On Mac, make the dock icon re-launch the browser window.
+   */
+  @SuppressWarnings("restriction")
+  private static void registerDockHandler(URI uri) {
+    try {
+      com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
+      application.addAppEventListener(new AppListener(uri));
+    } catch (Exception e) {
+      LoggerFactory.getLogger(Main.class.getName()).debug("Failed to register AppEventListener", e);
+    }
   }
 }

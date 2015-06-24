@@ -16,6 +16,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.client.filter.CsrfProtectionFilter;
 import org.jooq.impl.DSL;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,6 +36,8 @@ public class ResourceTestBase {
 
   @BeforeClass
   public static void bringUpServer() throws Exception {
+    Main.setupLogger();
+
     int port;
     try (ServerSocket socket = new ServerSocket()) {
       socket.bind(new InetSocketAddress("localhost", 0));
@@ -49,7 +52,9 @@ public class ResourceTestBase {
     server = Main.startServer(uri, "jdbc:h2:mem:test", clock, null);
 
     // create the client
-    client = ClientBuilder.newClient().register(ObjectMapperProvider.class);
+    client = ClientBuilder.newClient()
+        .register(ObjectMapperProvider.class)
+        .register(CsrfProtectionFilter.class);
     target = client.target(uri).path("api");
   }
 
