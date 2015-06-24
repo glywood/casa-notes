@@ -99,6 +99,40 @@ public class ActivitiesResourceTest extends PersonTestBase {
     assertEquals(2.5, getResponse.hours, 0.0);
   }
 
+  @Test
+  public void reverseChronological() {
+    ActivityJson toCreate = new ActivityJson();
+    toCreate.description = "activity one";
+    toCreate.type = "Visit";
+    toCreate.date = LocalDate.of(2015, 06, 21);
+    toCreate.summary = "did something";
+    toCreate.successes = "";
+    toCreate.concerns = "";
+    toCreate.hours = 0.7;
+    Response postResponse = activities().post(entity(toCreate));
+    assertEquals(200, postResponse.getStatus());
+
+    toCreate.description = "activity two";
+    toCreate.date = LocalDate.of(2015, 06, 22);
+    postResponse = activities().post(entity(toCreate));
+    assertEquals(200, postResponse.getStatus());
+
+    toCreate.description = "activity three";
+    toCreate.date = LocalDate.of(2015, 06, 23);
+    postResponse = activities().post(entity(toCreate));
+    assertEquals(200, postResponse.getStatus());
+
+    List<ActivitySummaryJson> summaries = activities().get(
+        new GenericType<List<ActivitySummaryJson>>() {});
+    assertEquals(3, summaries.size());
+    assertEquals("activity three", summaries.get(0).description);
+    assertEquals(LocalDate.of(2015, 06, 23), summaries.get(0).date);
+    assertEquals("activity two", summaries.get(1).description);
+    assertEquals(LocalDate.of(2015, 06, 22), summaries.get(1).date);
+    assertEquals("activity one", summaries.get(2).description);
+    assertEquals(LocalDate.of(2015, 06, 21), summaries.get(2).date);
+  }
+
   private Invocation.Builder activities() {
     return person().path("activities").request();
   }
