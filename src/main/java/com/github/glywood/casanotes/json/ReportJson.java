@@ -17,12 +17,14 @@
  */
 package com.github.glywood.casanotes.json;
 
+import java.time.Duration;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ReportJson {
 
-  @JsonProperty("hours")
-  public double hours;
+  @JsonProperty("duration")
+  public Duration duration;
 
   @JsonProperty("successes")
   public String successes;

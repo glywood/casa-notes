@@ -16,11 +16,11 @@
   </div>
   <div class="col-sm-9">
     <table class="table">
-      <tr><th>Date</th><th>Description</th><th>Hours</th></tr>
+      <tr><th>Date</th><th>Description</th><th>Duration</th></tr>
       <tr ng-repeat="activity in activities">
         <td>{{activity.date}}</td>
         <td><a ui-sref="person.activity({activityId: activity.id, type: activity.type})">{{activity.description}}</a></td>
-        <td>{{activity.hours}}</td>
+        <td>{{activity.formattedDuration.hours}}h {{activity.formattedDuration.minutes}}m</td>
       </tr>
     </table>
   </div>

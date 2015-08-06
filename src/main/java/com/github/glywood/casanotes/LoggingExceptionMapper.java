@@ -36,7 +36,14 @@ public class LoggingExceptionMapper implements ExceptionMapper<Throwable> {
   public Response toResponse(Throwable exception) {
     if (exception instanceof WebApplicationException) {
       logger.debug("Failure in resource method", exception);
-      return ((WebApplicationException) exception).getResponse();
+
+      Response response = ((WebApplicationException) exception).getResponse();
+      if (response.hasEntity()) {
+        return response;
+      } else {
+        return Response.status(response.getStatusInfo()).entity("Error: " + exception.getMessage())
+            .build();
+      }
     } else {
       String rand = Long.toHexString(random.nextLong());
       logger.debug("Failure in resource method, id " + rand, exception);

@@ -182,6 +182,11 @@
 				    <type>java.time.Instant</type>
 				    <converter>com.github.glywood.casanotes.db.InstantConverter</converter>
 				</customType>
+			        <customType>
+				    <name>Duration</name>
+				    <type>java.time.Duration</type>
+				    <converter>com.github.glywood.casanotes.db.DurationConverter</converter>
+				</customType>
 			    </customTypes>
 			    <forcedTypes>
 			        <forcedType>
@@ -193,6 +198,11 @@
 				    <name>Instant</name>
 				    <expression>.*_AT</expression>
 				    <types>TIMESTAMP</types>
+				</forcedType>
+				<forcedType>
+				    <name>Duration</name>
+				    <expression>(.*_)?DURATION</expression>
+				    <types>VARCHAR</types>
 				</forcedType>
 			    </forcedTypes>
 			</database>

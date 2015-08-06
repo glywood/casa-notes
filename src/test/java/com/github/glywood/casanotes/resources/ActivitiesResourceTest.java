@@ -20,6 +20,7 @@ package com.github.glywood.casanotes.resources;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class ActivitiesResourceTest extends PersonTestBase {
     toCreate.description = "fdsa";
     toCreate.type = "Visit";
     toCreate.date = LocalDate.now(clock());
-    toCreate.hours = -.05;
+    toCreate.duration = Duration.ofMinutes(-3);
     toCreate.summary = "blarg";
     toCreate.successes = "none";
     toCreate.concerns = "nothing";
@@ -74,7 +75,7 @@ public class ActivitiesResourceTest extends PersonTestBase {
     toCreate.description = "fdsa";
     toCreate.type = "Visit";
     toCreate.date = LocalDate.now(clock());
-    toCreate.hours = 2.5;
+    toCreate.duration = Duration.ofMinutes(150);
     toCreate.summary = "blarg";
     toCreate.successes = "none";
     toCreate.concerns = "nothing";
@@ -87,7 +88,7 @@ public class ActivitiesResourceTest extends PersonTestBase {
     assertEquals(1, summaries.size());
     assertEquals("fdsa", summaries.get(0).description);
     assertEquals(LocalDate.now(clock()), summaries.get(0).date);
-    assertEquals(2.5, summaries.get(0).hours, 0.0);
+    assertEquals(150, summaries.get(0).duration.toMinutes(), 0.0);
 
     Integer createdId = postResponse.readEntity(ActivityJson.class).id;
     assertNotNull(createdId);
@@ -96,7 +97,7 @@ public class ActivitiesResourceTest extends PersonTestBase {
     assertNotNull(getResponse.id);
     assertEquals(LocalDate.now(clock()), getResponse.date);
     assertEquals(true, getResponse.educational);
-    assertEquals(2.5, getResponse.hours, 0.0);
+    assertEquals(150, getResponse.duration.toMinutes(), 0.0);
   }
 
   @Test
@@ -108,7 +109,7 @@ public class ActivitiesResourceTest extends PersonTestBase {
     toCreate.summary = "did something";
     toCreate.successes = "";
     toCreate.concerns = "";
-    toCreate.hours = 0.7;
+    toCreate.duration = Duration.ofMinutes(45);
     Response postResponse = activities().post(entity(toCreate));
     assertEquals(200, postResponse.getStatus());
 

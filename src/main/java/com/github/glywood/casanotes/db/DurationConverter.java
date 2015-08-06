@@ -15,27 +15,32 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package com.github.glywood.casanotes.json;
+package com.github.glywood.casanotes.db;
 
 import java.time.Duration;
-import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jooq.Converter;
 
-public class ActivitySummaryJson {
+public class DurationConverter implements Converter<String, Duration> {
+  private static final long serialVersionUID = -1998208035074410456L;
 
-  @JsonProperty("id")
-  public int id;
+  @Override
+  public Duration from(String duration) {
+    return duration == null ? null : Duration.parse(duration);
+  }
 
-  @JsonProperty("type")
-  public String type;
+  @Override
+  public String to(Duration duration) {
+    return duration == null ? null : duration.toString();
+  }
 
-  @JsonProperty("description")
-  public String description;
+  @Override
+  public Class<String> fromType() {
+    return String.class;
+  }
 
-  @JsonProperty("date")
-  public LocalDate date;
-
-  @JsonProperty("duration")
-  public Duration duration;
+  @Override
+  public Class<Duration> toType() {
+    return Duration.class;
+  }
 }

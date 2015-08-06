@@ -19,8 +19,12 @@
 
   <div class="form-group" ng-class="{ 'has-error' : activityForm.hours.$invalid && activityForm.hours.$touched }">
     <label for="hours" class="col-sm-2 control-label">Hours</label>
-    <div class="col-sm-4">
-      <input type="number" class="form-control" id="hours" name="hours" ng-model="activity.hours" required>
+    <div class="col-sm-2">
+      <input type="number" class="form-control" id="hours" name="hours" ng-model="hours" required>
+    </div>
+    <label for="minutes" class="col-sm-2 control-label">Minutes</label>
+    <div class="col-sm-2">
+      <input type="number" class="form-control" id="minutes" name="minutes" ng-model="minutes">
     </div>
   </div>
 

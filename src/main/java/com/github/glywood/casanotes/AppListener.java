@@ -32,7 +32,6 @@ import com.apple.eawt.AppReOpenedListener;
  * is clicked. This uses a Mac-specific API and the class will fail to load on
  * other platforms.
  */
-@SuppressWarnings("restriction")
 public class AppListener implements AppReOpenedListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(AppListener.class);
 

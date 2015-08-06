@@ -123,7 +123,6 @@ public class Main {
   /**
    * On Mac, make the dock icon re-launch the browser window.
    */
-  @SuppressWarnings("restriction")
   private static void registerDockHandler(URI uri) {
     try {
       com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();

@@ -104,6 +104,9 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
   $scope.loading = true
   $scope.activities = []
   ActivitiesResource.query(function(activities) {
+    for (i = 0; i < activities.length; i++) {
+      activities[i].formattedDuration = new Duration(activities[i].duration).value()
+    }
     $scope.activities = activities
     $scope.loading = false
   }, function(response) {
@@ -121,7 +124,10 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
   if ($stateParams.activityId !== 'new') {
     $scope.loading = true
     ActivityResource.get({id: $stateParams.activityId}, function(activity) {
+      var duration = new Duration(activity.duration).value()
       $scope.activity = activity
+      $scope.hours = duration.hours
+      $scope.minutes = duration.minutes
       $scope.loading = false
     }, function(response) {
       $scope.error = response.data
@@ -134,9 +140,12 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
       successes: '',
       concerns: ''
     }
+    $scope.hours = ""
+    $scope.minutes = ""
   }
 
   $scope.save = function() {
+    $scope.activity.duration = "PT" + Math.floor($scope.hours) + "H" + Math.floor($scope.minutes) + "M"
     ActivityResource.save($scope.activity, function() {
       $state.go("person.activities")
     }, function(response) {
@@ -165,6 +174,8 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
       ReportsResource.get({personId: $stateParams.personId, start: $scope.start, end: $scope.end},
       function(report) {
         $scope.report = report
+        var dur = new Duration(report.duration).value();
+        $scope.formattedDuration = dur.hours + "h " + dur.minutes + "m"
       }, function(response) {
         $scope.error = response.data
       })

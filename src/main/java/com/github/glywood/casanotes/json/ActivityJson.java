@@ -17,6 +17,7 @@
  */
 package com.github.glywood.casanotes.json;
 
+import java.time.Duration;
 import java.time.LocalDate;
 
 import javax.validation.constraints.NotNull;
@@ -43,8 +44,9 @@ public class ActivityJson {
   @NotNull
   public LocalDate date;
 
-  @JsonProperty("hours")
-  public double hours;
+  @JsonProperty("duration")
+  @NotNull
+  public Duration duration;
 
   @JsonProperty("summary")
   @NotNull

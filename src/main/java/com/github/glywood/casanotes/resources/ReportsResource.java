@@ -19,6 +19,7 @@ package com.github.glywood.casanotes.resources;
 
 import static com.github.glywood.casanotes.db.generated.Tables.ACTIVITY;
 
+import java.time.Duration;
 import java.time.LocalDate;
 
 import javax.ws.rs.GET;
@@ -53,7 +54,7 @@ public class ReportsResource {
     Result<ActivityRecord> records = db.selectFrom(ACTIVITY).where(ACTIVITY.PERSON_ID.eq(personId))
         .and(ACTIVITY.DATE.between(startDate, endDate)).orderBy(ACTIVITY.DATE).fetch();
 
-    double hours = 0;
+    Duration duration = Duration.ZERO;
     StringBuilder successes = new StringBuilder();
     StringBuilder concerns = new StringBuilder();
     boolean selfesteem = false;
@@ -65,7 +66,7 @@ public class ReportsResource {
     boolean healthy = false;
     boolean milestones = false;
     for (ActivityRecord record : records) {
-      hours += record.getHours();
+      duration = duration.plus(record.getDuration());
 
       if (!record.getSuccesses().trim().isEmpty()) {
         successes.append(record.getSuccesses().trim());
@@ -88,7 +89,7 @@ public class ReportsResource {
     }
 
     ReportJson json = new ReportJson();
-    json.hours = hours;
+    json.duration = duration;
     json.successes = successes.toString().trim();
     json.concerns = concerns.toString().trim();
     json.selfesteem = selfesteem;

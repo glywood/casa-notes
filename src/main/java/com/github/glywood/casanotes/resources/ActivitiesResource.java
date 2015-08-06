@@ -59,7 +59,7 @@ public class ActivitiesResource {
   @GET
   public List<ActivitySummaryJson> getAll() {
     return db
-        .select(ACTIVITY.ID, ACTIVITY.TYPE, ACTIVITY.DESCRIPTION, ACTIVITY.DATE, ACTIVITY.HOURS)
+        .select(ACTIVITY.ID, ACTIVITY.TYPE, ACTIVITY.DESCRIPTION, ACTIVITY.DATE, ACTIVITY.DURATION)
         .from(ACTIVITY)
         .where(ACTIVITY.PERSON_ID.eq(personId))
         .orderBy(ACTIVITY.DATE.desc())
@@ -69,7 +69,7 @@ public class ActivitiesResource {
           json.type = record.value2();
           json.description = record.value3();
           json.date = record.value4();
-          json.hours = record.value5();
+          json.duration = record.value5();
           return json;
     });
   }
@@ -84,7 +84,7 @@ public class ActivitiesResource {
           json.description = record.getDescription();
           json.type = record.getType();
           json.date = record.getDate();
-          json.hours = record.getHours();
+          json.duration = record.getDuration();
           json.summary = record.getSummary();
           json.successes = record.getSuccesses();
           json.concerns = record.getConcerns();
@@ -106,8 +106,8 @@ public class ActivitiesResource {
 
   @POST
   public ActivityJson save(@NotNull @Valid ActivityJson json) {
-    if (json.hours < 0) {
-      throw new WebApplicationException("hours must be non-negative", Status.BAD_REQUEST);
+    if (json.duration.isNegative()) {
+      throw new WebApplicationException("duration cannot be negative", Status.BAD_REQUEST);
     }
 
     Instant now = Instant.now(clock);
@@ -117,7 +117,7 @@ public class ActivitiesResource {
     record.setModifiedAt(now);
     record.setDescription(json.description);
     record.setDate(json.date);
-    record.setHours(json.hours);
+    record.setDuration(json.duration);
     record.setSummary(json.summary);
     record.setSuccesses(json.successes);
     record.setConcerns(json.concerns);
