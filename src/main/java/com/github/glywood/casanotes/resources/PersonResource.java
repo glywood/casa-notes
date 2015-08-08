@@ -57,4 +57,9 @@ public class PersonResource {
   public ReportsResource reports() {
     return new ReportsResource(db, person.getId());
   }
+
+  @Path("contacts")
+  public ContactsResource contacts() {
+    return new ContactsResource(db, person.getId());
+  }
 }

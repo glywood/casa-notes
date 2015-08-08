@@ -135,7 +135,8 @@ public class ActivitiesResource {
       json.id = db.insertInto(ACTIVITY).set(record).returning(ACTIVITY.ID).fetchOne().getId();
     } else {
       record.setId(json.id);
-      int updated = db.update(ACTIVITY).set(record).where(ACTIVITY.ID.eq(json.id)).execute();
+      int updated = db.update(ACTIVITY).set(record).where(ACTIVITY.ID.eq(json.id))
+          .and(ACTIVITY.PERSON_ID.eq(personId)).execute();
       if (updated == 0) {
         throw new WebApplicationException("Activity not found", Status.NOT_FOUND);
       }
