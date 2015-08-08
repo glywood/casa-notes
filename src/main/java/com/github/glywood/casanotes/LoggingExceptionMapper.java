@@ -20,6 +20,7 @@ package com.github.glywood.casanotes;
 import java.security.SecureRandom;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -42,12 +43,13 @@ public class LoggingExceptionMapper implements ExceptionMapper<Throwable> {
         return response;
       } else {
         return Response.status(response.getStatusInfo()).entity("Error: " + exception.getMessage())
-            .build();
+            .type(MediaType.TEXT_PLAIN).build();
       }
     } else {
       String rand = Long.toHexString(random.nextLong());
       logger.debug("Failure in resource method, id " + rand, exception);
-      return Response.serverError().entity("Server error " + rand).build();
+      return Response.serverError().entity("Server error " + rand).type(MediaType.TEXT_PLAIN)
+          .build();
     }
   }
 }
