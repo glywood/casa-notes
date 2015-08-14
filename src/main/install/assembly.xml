@@ -10,6 +10,7 @@
     <fileSet>
       <directory>${project.basedir}/src/main/install</directory>
       <outputDirectory>Contents</outputDirectory>
+      <fileMode>0644</fileMode>
       <includes>
         <include>Info.plist</include>
       </includes>
@@ -25,6 +26,7 @@
     <fileSet>
       <directory>${project.basedir}/src/main/web</directory>
       <outputDirectory>Contents/Web</outputDirectory>
+      <fileMode>0644</fileMode>
       <includes>
 	<include>**</include>
       </includes>
@@ -33,6 +35,7 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>Contents/Resources</outputDirectory>
+      <fileMode>0644</fileMode>
       <useProjectArtifact>true</useProjectArtifact>
       <scope>runtime</scope>
     </dependencySet>
