@@ -1,1 +1,27 @@
 <h1>Contacts</h1>
+<div ng-if="error" class="alert alert-danger" role="alert">
+  {{error}}
+</div>
+<div class="row">
+  <div class="btn-group col-sm-3">
+    <button type="button" class="btn btn-success" ui-sref="person.contact({contactId: 'new'})">
+      Add Contact
+    </button>
+  </div>
+  <div class="col-sm-9">
+    <table class="table">
+      <tr>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Phone</th>
+        <th>Email</th>
+      </tr>
+      <tr ng-repeat="contact in contacts">
+        <td><a ui-sref="person.contact({contactId: contact.id})">{{contact.name}}</a></td>
+        <td>{{contact.role}}</td>
+        <td>{{contact.phone}}</td>
+        <td><a ng-href="mailto:{{contact.email}}">{{contact.email}}</a></td>
+      </tr>
+    </table>
+  </div>
+</div>

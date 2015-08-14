@@ -54,7 +54,13 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
   })
   .state('person.contacts', {
     url: "/contacts",
-    templateUrl: "contacts.html"
+    templateUrl: "contacts.html",
+    controller: 'ContactsController'
+  })
+  .state('person.contact', {
+    url: "/contact/{contactId}",
+    templateUrl: "contact.html",
+    controller: 'ContactController'
   })
   .state('settings', {
     url: "/settings",
@@ -102,6 +108,7 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
       {personId: $stateParams.personId})
 
   $scope.loading = true
+  $scope.error = ""
   $scope.activities = []
   ActivitiesResource.query(function(activities) {
     for (i = 0; i < activities.length; i++) {
@@ -123,6 +130,7 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
 
   if ($stateParams.activityId !== 'new') {
     $scope.loading = true
+    $scope.error = ""
     ActivityResource.get({id: $stateParams.activityId}, function(activity) {
       var duration = new Duration(activity.duration).value()
       $scope.activity = activity
@@ -145,6 +153,7 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
   }
 
   $scope.save = function() {
+    $scope.error = ""
     $scope.activity.duration = "PT" + Math.floor($scope.hours) + "H" + Math.floor($scope.minutes) + "M"
     ActivityResource.save($scope.activity, function() {
       $state.go("person.activities")
@@ -154,6 +163,7 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
   }
 
   $scope.delete = function() {
+    $scope.error = ""
     ActivityResource.delete({id: $stateParams.activityId}, function(activity) {
       $state.go("person.activities")
     }, function(response) {
@@ -171,6 +181,7 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
     $scope.report = undefined
     if (/\d\d\d\d-\d\d-\d\d/.test($scope.start)
         && /\d\d\d\d-\d\d-\d\d/.test($scope.end)) {
+      $scope.error = ""
       ReportsResource.get({personId: $stateParams.personId, start: $scope.start, end: $scope.end},
       function(report) {
         $scope.report = report
@@ -180,5 +191,62 @@ var casaNotesApp = angular.module('casaNotesApp', ['ui.router', 'ngResource'])
         $scope.error = response.data
       })
     }
+  }
+}])
+
+.controller('ContactsController', ['$scope', '$stateParams', '$resource',
+    function($scope, $stateParams, $resource) {
+
+  var ContactsResource = $resource("/api/people/:personId/contacts",
+      {personId: $stateParams.personId})
+
+  $scope.loading = true
+  $scope.error = ""
+  $scope.contacts = []
+  ContactsResource.query(function(contacts) {
+    $scope.contacts = contacts
+    $scope.loading = false
+  }, function(response) {
+    $scope.error = response.data
+    $scope.loading = false
+  })
+}])
+
+.controller('ContactController', ['$scope', '$stateParams', '$state', '$resource',
+    function($scope, $stateParams, $state, $resource) {
+
+  var ContactResource = $resource("/api/people/:personId/contacts/:id",
+      {personId: $stateParams.personId})
+
+  if ($stateParams.contactId !== "new") {
+    $scope.loading = true
+    $scope.error = ""
+    ContactResource.get({id: $stateParams.contactId}, function(contact) {
+      $scope.contact = contact
+      $scope.loading = false
+    }, function(response) {
+      $scope.error = response.data
+      $scope.loading = false
+    })
+  } else {
+    $scope.contact = {}
+  }
+
+  $scope.save = function() {
+    $scope.error = ""
+    ContactResource.save($scope.contact, function() {
+      $state.go("person.contacts")
+    }, function(response) {
+      $scope.error = response.data
+    })
+  }
+
+  $scope.delete = function() {
+    $scope.error = ""
+    ContactResource.delete({id: $stateParams.contactId}, function(contact) {
+      $state.go("person.contacts")
+    }, function(response) {
+      $scope.error = response.data
+    })
   }
 }])
