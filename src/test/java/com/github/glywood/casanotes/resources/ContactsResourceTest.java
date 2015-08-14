@@ -30,9 +30,26 @@ import com.github.glywood.casanotes.json.ContactJson;
 public class ContactsResourceTest extends PersonTestBase {
 
   @Test
+  public void addNullName() {
+    ContactJson json = new ContactJson();
+    json.role = "Lawyer";
+    Response response = contacts().post(entity(json));
+    assertEquals(400, response.getStatus());
+  }
+
+  @Test
   public void addEmptyName() {
     ContactJson json = new ContactJson();
     json.role = "Lawyer";
+    json.name = "";
+    Response response = contacts().post(entity(json));
+    assertEquals(400, response.getStatus());
+  }
+
+  @Test
+  public void addNullRole() {
+    ContactJson json = new ContactJson();
+    json.name = "Geoff";
     Response response = contacts().post(entity(json));
     assertEquals(400, response.getStatus());
   }
@@ -41,6 +58,7 @@ public class ContactsResourceTest extends PersonTestBase {
   public void addEmptyRole() {
     ContactJson json = new ContactJson();
     json.name = "Geoff";
+    json.role = "";
     Response response = contacts().post(entity(json));
     assertEquals(400, response.getStatus());
   }

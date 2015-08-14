@@ -21,8 +21,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -37,7 +36,7 @@ public class ActivityJson {
 
   @JsonProperty("description")
   @NotNull
-  @Length(min = 1)
+  @Size(min = 1)
   public String description;
 
   @JsonProperty("date")

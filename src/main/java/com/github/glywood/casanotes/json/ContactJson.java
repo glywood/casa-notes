@@ -18,6 +18,7 @@
 package com.github.glywood.casanotes.json;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -28,10 +29,12 @@ public class ContactJson {
 
   @JsonProperty("name")
   @NotNull
+  @Size(min = 1)
   public String name;
 
   @JsonProperty("role")
   @NotNull
+  @Size(min = 1)
   public String role;
 
   @JsonProperty("phone")

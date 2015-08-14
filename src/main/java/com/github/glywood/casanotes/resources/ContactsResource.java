@@ -24,6 +24,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -90,6 +91,12 @@ public class ContactsResource {
       }
     }
     return json;
+  }
+
+  @DELETE
+  @Path("{id}")
+  public void delete(@PathParam("id") int id) {
+    db.deleteFrom(CONTACT).where(CONTACT.ID.eq(id)).and(CONTACT.PERSON_ID.eq(personId)).execute();
   }
 
   private ContactJson toJson(ContactRecord record) {
