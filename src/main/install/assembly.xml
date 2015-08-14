@@ -23,7 +23,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/src/main/resources/static</directory>
+      <directory>${project.basedir}/src/main/web</directory>
       <outputDirectory>Contents/Web</outputDirectory>
       <includes>
 	<include>**</include>
